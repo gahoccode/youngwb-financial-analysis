@@ -1,0 +1,45 @@
+# Financial analysis task - primary task for analyzing financial statements
+financial_analysis_task:
+  description: >
+    Analyze the financial statements provided: balance sheet, income statement, 
+    cash flow statement and key financial ratios for company {ticker}.
+    
+    BALANCE SHEET:
+    {balance_sheet}
+    
+    INCOME STATEMENT:
+    {income_statement}
+    
+    CASH FLOW STATEMENT:
+    {cash_flow}
+    
+    KEY FINANCIAL RATIOS:
+    {financial_ratios}
+  expected_output: >
+     Provide the following comprehensive analysis:
+      1. Analysis of asset composition, liabilities and equity structure
+      2. Profitability analysis (margins, ROCE, ROE, ROIC)
+      3. Cash flow quality and trends
+      4. Evaluation of liquidity and solvency ratios
+      5. Assessment of working capital management
+      6. Year-over-year changes in key financial items
+      7. Integrated analysis showing relationships between the three statements
+      8. Dividend sustainability analysis based on the dividend coverage ratio
+  agent: financial_analyst
+  output_file: financial_analysis.md
+
+# Research task - placeholder to prevent initialization errors
+research_task:
+  description: >
+    Research task placeholder.
+  expected_output: >
+    Placeholder research output.
+  agent: financial_analyst
+  
+# Reporting task - placeholder to prevent initialization errors
+reporting_task:
+  description: >
+    Reporting task placeholder.
+  expected_output: >
+    Placeholder reporting output.
+  agent: financial_analyst
