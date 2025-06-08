@@ -48,10 +48,7 @@ This command initializes the YoungWB Crew, assembling the agents and assigning t
 
 ```bash
 # Run analysis on a specific ticker (e.g., REE)
-python -m youngwb.main run --ticker=REE
-
-# Run with a different ticker
-python -m youngwb.main run --ticker=VCB
+crewai run
 ```
 
 ## Project Structure
@@ -62,12 +59,25 @@ The project follows a modular architecture:
 - `crew.py`: CrewAI setup and orchestration
 - `main.py`: Entry point with CLI support
 
-## Support
+## Environment Variables
 
-For support, questions, or feedback regarding the Youngwb Crew or crewAI.
-- Visit our [documentation](https://docs.crewai.com)
-- Reach out to us through our [GitHub repository](https://github.com/joaomdmoura/crewai)
-- [Join our Discord](https://discord.com/invite/X4JWnZnxPb)
-- [Chat with our docs](https://chatg.pt/DWjSBZn)
+This project requires the following environment variables to be set in a `.env` file in the root directory:
 
-Let's create wonders together with the power and simplicity of crewAI.
+```bash
+# OpenAI model to use (e.g., gpt-4o-mini, gpt-4-turbo)
+MODEL=gpt-4o-mini
+
+# Your OpenAI API key
+OPENAI_API_KEY=your_openai_api_key_here
+
+# Serper API key for web search capabilities
+# Get your free Serper API key from https://serper.dev
+SERPER_API_KEY=your_serper_api_key_here
+```
+
+### API Key Requirements
+
+- **OPENAI_API_KEY**: Required for all agents to function
+- **SERPER_API_KEY**: Required for the news research agent to search for Vietnamese stock market news
+
+Without these API keys, certain functionality will be limited or unavailable.
