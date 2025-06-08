@@ -26,4 +26,4 @@ financial_analysis_task:
       7. Integrated analysis showing relationships between the three statements
       8. Dividend sustainability analysis based on the dividend coverage ratio
   agent: financial_analyst
-  output_file: financial_analysis.md
+  output_file: ./output/financial_analysis.md
