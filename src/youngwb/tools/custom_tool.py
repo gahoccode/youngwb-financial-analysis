@@ -1,15 +1,9 @@
-from typing import Type, Optional, Any
+from typing import Type
 from crewai.tools import BaseTool
 from pydantic import BaseModel, Field
-from vnstock import Vnstock
-from datetime import datetime, timedelta
+from datetime import datetime
 import pandas as pd
-import numpy as np
-
-
-class StockDataInput(BaseModel):
-    """Input schema for stock data retrieval"""
-    ticker: str = Field(..., description="Stock ticker symbol")
+import re
 
 
 class FinancialAnalysisInput(BaseModel):
@@ -318,109 +312,3 @@ class FinancialDataTool(BaseTool):
         return "\n\n".join(analysis)
     
     # These old helper methods are now replaced by the more comprehensive methods above
-
-
-class FundDataTool(BaseTool):
-    name: str = "Công cụ tra cứu dữ liệu cổ phiếu phục vụ phân tích cơ bản."
-    description: str = (
-        "Công cụ tra cứu dữ liệu cổ phiếu phục vụ phân tích cơ bản."
-    )
-    args_schema: Type[BaseModel] = StockDataInput
-
-    def _run(self, ticker: str) -> str:
-        # Implementation goes here
-        try:
-            # Initialize the class 
-            stock = Vnstock().stock(symbol=ticker, source="TCBS")
-            financial_ratios = stock.finance.ratio(period="year")
-            income_df = stock.finance.income_statement(period="year")
-            company = Vnstock().stock(symbol=ticker, source='TCBS').company
-            balance_sheet = stock.finance.balance_sheet(period="year")
-            cash_flow = stock.finance.cash_flow(period="year")
-            dividends = company.dividends()
-
-              # Get company full name & industry
-            full_name = company.profile().get("company_name").iloc[0]
-            industry = company.overview().get("industry").iloc[0]
-
-            # Calculate free cash flow
-            Levered_FCF = (
-                CashFlow['Net cash inflows/outflows from operating activities'] 
-                - CashFlow['Purchase of fixed assets']
-                + CashFlow['Proceeds from disposal of fixed assets']
-                - (CashFlow['Repayment of borrowings'] - CashFlow['Proceeds from borrowings'])
-            )
-
-            # Divideneds paid
-            dividends_paid = CashFlow['Dividends paid'].abs()
-
-            # Calculate dividend coverage ratio
-            dividend_coverage_ratio = Levered_FCF / dividends_paid
-
-            # Get data from the latest row of DataFrame for financial ratios
-            latest_ratios = financial_ratios.iloc[0]        
-            balance_sheet = balance_sheet.iloc[0]
-            Levered_FCF = Levered_FCF.iloc[0]
-            
-            # Get last 3 years of income statement
-            last_3_years = income_df.head(3)
-            balance_sheet = balance_sheet.head(3)
-            cash_flow = Levered_FCF.head(3)
-            dividends_paid = dividends_paid.head(3)
-
-            #Extract financial ratios data
-            pe_ratio = latest_ratios.get("price_to_earning", "N/A")
-            pb_ratio = latest_ratios.get("price_to_book", "N/A")
-            roe = latest_ratios.get("roe", "N/A")
-            roa = latest_ratios.get("roa", "N/A")
-            eps = latest_ratios.get("earning_per_share", "N/A")
-            de = latest_ratios.get("debt_on_equity", "N/A")
-            profit_margin = latest_ratios.get("gross_profit_margin", "N/A")
-            evebitda = latest_ratios.get("value_before_ebitda", "N/A")
-            
-            # Format annual income data
-            annual_trends = []
-            for i, (_, year) in enumerate(last_3_years.iterrows()):          
-                # Handle formatting of values properly
-                revenue = year.get("revenue", "N/A")
-                revenue_formatted = f"{revenue:,.0f} VND" if isinstance(revenue, (int, float)) else revenue
-                
-                gross_profit = year.get("gross_profit", "N/A")
-                gross_profit_formatted = f"{gross_profit:,.0f} VND" if isinstance(gross_profit, (int, float)) else gross_profit
-                
-                post_tax_profit = year.get("post_tax_profit", "N/A")
-                post_tax_profit_formatted = f"{post_tax_profit:,.0f} VND" if isinstance(post_tax_profit, (int, float)) else post_tax_profit
-                
-                dividends_trend = dividends_paid.get("dividends_paid", "N/A")
-                dividends_trend_formatted = f"{dividends_trend:,.0f} VND" if isinstance(dividends_trend, (int, float)) else dividends_trend
-                
-                year_info = f"""
-                Năm {i + 1}:
-                - Doanh thu thuần: {revenue_formatted}
-                - Lợi nhuận gộp: {gross_profit_formatted}
-                - Lợi nhuận sau thuế: {post_tax_profit_formatted}
-                """
-                annual_trends.append(year_info)
-            
-            return f"""Mã cổ phiếu: {ticker}
-            Tên công ty: {full_name}
-            Ngành: {industry}
-            Ngày phân tích: {datetime.now().strftime('%Y-%m-%d')}
-            
-            Tỷ lệ P/E: {pe_ratio}
-            Tỷ lệ P/B: {pb_ratio}
-            Tỷ lệ ROE: {roe}
-            Tỷ lệ ROA: {roa}
-            Biên lợi nhuận: {profit_margin}
-            Lợi nhuận trên mỗi cổ phiếu EPS (VND): {eps}
-            Hệ số nợ trên vốn chủ sở hữu D/E: {de}
-            Tỷ lệ EV/EBITDA: {evebitda}
-
-            XU HƯỚNG 4 QUÝ GẦN NHẤT:
-            {"".join(annual_trends)}
-            """
-        except Exception as e:
-            return f"Lỗi khi lấy dữ liệu: {e}"
-
-            
-        

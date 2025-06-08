@@ -27,19 +27,3 @@ financial_analysis_task:
       8. Dividend sustainability analysis based on the dividend coverage ratio
   agent: financial_analyst
   output_file: financial_analysis.md
-
-# Research task - placeholder to prevent initialization errors
-research_task:
-  description: >
-    Research task placeholder.
-  expected_output: >
-    Placeholder research output.
-  agent: financial_analyst
-  
-# Reporting task - placeholder to prevent initialization errors
-reporting_task:
-  description: >
-    Reporting task placeholder.
-  expected_output: >
-    Placeholder reporting output.
-  agent: financial_analyst
